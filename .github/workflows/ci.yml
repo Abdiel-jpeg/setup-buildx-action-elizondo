@@ -21,7 +21,7 @@ on:
 
 jobs:
   main:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -50,7 +50,7 @@ jobs:
           EOF
 
   multi:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -63,7 +63,7 @@ jobs:
         uses: ./
 
   error:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -91,7 +91,7 @@ jobs:
         uses: crazy-max/ghaction-dump-context@4d9eeaf15dd59aa4346919ea84a84ccf514b4db8 # v3.1.0
 
   debug:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -119,7 +119,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/ppc64le
 
   use:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -140,7 +140,7 @@ jobs:
         run: docker buildx ls
 
   driver:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -161,7 +161,7 @@ jobs:
           driver-opts: ${{ matrix.driver-opts }}
 
   docker-driver:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -181,7 +181,7 @@ jobs:
           docker buildx inspect | grep Status | grep running
 
   endpoint:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     services:
       dind:
         image: docker:29.3-dind@sha256:4d90f1f6c400315c2dba96d3ec93c01e64198395cbba04f79d12adce4f737029
@@ -216,7 +216,7 @@ jobs:
           DOCKER_CONTEXT: mycontext
 
   buildkitd-config:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -248,7 +248,7 @@ jobs:
           context: .
 
   buildkitd-config-inline:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -275,7 +275,7 @@ jobs:
           context: .
 
   with-qemu:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -305,7 +305,7 @@ jobs:
         run: echo ${{ steps.buildx.outputs.platforms }}
 
   build-ref:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -336,7 +336,7 @@ jobs:
           context: .
 
   standalone-cmd:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -364,7 +364,7 @@ jobs:
           buildx build .
 
   standalone-action:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -395,7 +395,7 @@ jobs:
           context: .
 
   append:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -424,7 +424,7 @@ jobs:
         run: echo ${{ steps.buildx.outputs.platforms }}
 
   platforms:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -439,7 +439,7 @@ jobs:
           platforms: linux/amd64
 
   docker-context:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -456,7 +456,7 @@ jobs:
           driver: docker
 
   cleanup:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -474,7 +474,7 @@ jobs:
           cleanup: ${{ matrix.cleanup }}
 
   k3s:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -523,7 +523,7 @@ jobs:
           context: .
 
   cache-binary:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -563,7 +563,7 @@ jobs:
         shell: bash
 
   keep-state:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout
@@ -582,7 +582,7 @@ jobs:
           keep-state: true
 
   keep-state-error:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         name: Checkout

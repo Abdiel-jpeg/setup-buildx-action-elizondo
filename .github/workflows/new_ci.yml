@@ -142,28 +142,22 @@ jobs:
         run: docker buildx inspect
 
   error-handling:
-    name: Error Handling
     runs-on: self-hosted
 
-    steps:
+    env:
+      DOCKER_HOST: unix:///tmp/nonexistent.sock
 
+    steps:
       - uses: actions/checkout@v6
 
-      - name: Stop Docker daemon
-        run: |
-          sudo systemctl stop docker docker.socket
-
-      - name: Execute Buildx
+      - name: Setup Buildx
         id: buildx
         continue-on-error: true
         uses: ./
 
-      - name: Validate expected failure
+      - name: Verify failure
         run: |
-          if [ "${{ steps.buildx.outcome }}" != "failure" ]; then
-              echo "Expected failure."
-              exit 1
-          fi
+          test "${{ steps.buildx.outcome }}" = "failure"
 
   cleanup:
     name: Cleanup

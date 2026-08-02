@@ -1,0 +1,173 @@
+name: CI
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - master
+      - 'releases/v*'
+    tags:
+      - 'v*'
+
+  pull_request:
+
+jobs:
+
+  buildx-install:
+    name: Buildx Installation
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Docker Buildx
+        id: buildx
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+
+      - name: Verify installation
+        run: |
+          docker buildx version
+          docker buildx ls
+
+  docker-driver:
+    name: Docker Driver
+    runs-on: self-hosted
+
+    steps:
+
+      - uses: actions/checkout@v6
+
+      - name: Configure Buildx
+        id: builder
+        uses: ./
+        with:
+          driver: docker
+
+      - name: Validate builder
+        run: |
+          docker buildx inspect
+          docker buildx inspect | grep "Driver"
+          docker buildx inspect | grep "running"
+
+  docker-container:
+    name: Docker Container Driver
+    runs-on: self-hosted
+
+    steps:
+
+      - uses: actions/checkout@v6
+
+      - name: Configure Buildx
+        uses: ./
+        with:
+          driver: docker-container
+
+      - name: Verify
+        run: docker buildx inspect
+
+  build:
+    name: Multi-platform Build
+    runs-on: self-hosted
+
+    steps:
+
+      - uses: actions/checkout@v6
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64
+
+      - name: Setup Buildx
+        uses: ./
+
+      - name: Build sample image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          platforms: linux/amd64,linux/arm64
+
+  buildkit-config:
+    name: BuildKit Configuration
+    runs-on: self-hosted
+
+    steps:
+
+      - uses: actions/checkout@v6
+
+      - name: Create BuildKit configuration
+        run: |
+          cat > buildkitd.toml <<EOF
+          debug = true
+
+          [registry."docker.io"]
+            mirrors = ["mirror.gcr.io"]
+          EOF
+
+      - name: Configure Buildx
+        uses: ./
+        with:
+          buildkitd-config: buildkitd.toml
+          buildkitd-flags: --debug
+
+      - name: Verify BuildKit
+        run: docker buildx inspect
+
+  error-handling:
+    name: Error Handling
+    runs-on: self-hosted
+
+    steps:
+
+      - uses: actions/checkout@v6
+
+      - name: Stop Docker daemon
+        run: |
+          sudo systemctl stop docker docker.socket
+
+      - name: Execute Buildx
+        id: buildx
+        continue-on-error: true
+        uses: ./
+
+      - name: Validate expected failure
+        run: |
+          if [ "${{ steps.buildx.outcome }}" != "failure" ]; then
+              echo "Expected failure."
+              exit 1
+          fi
+
+  cleanup:
+    name: Cleanup
+    runs-on: self-hosted
+
+    steps:
+
+      - uses: actions/checkout@v6
+
+      - name: Configure Buildx
+        uses: ./
+        with:
+          cleanup: true
+
+      - name: Verify cleanup
+        run: docker buildx ls

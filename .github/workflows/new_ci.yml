@@ -83,28 +83,37 @@ jobs:
       - name: Verify
         run: docker buildx inspect
 
-  build:
-    name: Multi-platform Build
-    runs-on: self-hosted
+build:
+  name: Multi-platform Build
+  runs-on: self-hosted
 
-    steps:
+  steps:
 
-      - uses: actions/checkout@v6
+    - uses: actions/checkout@v6
 
-      - name: Setup QEMU
-        uses: docker/setup-qemu-action@v4
-        with:
-          platforms: arm64
+    - name: Create sample Dockerfile
+      run: |
+        cat > Dockerfile <<EOF
+        FROM alpine:latest
+        RUN uname -a
+        CMD ["sh"]
+        EOF
 
-      - name: Setup Buildx
-        uses: ./
+    - name: Setup QEMU
+      uses: docker/setup-qemu-action@v4
+      with:
+        platforms: arm64
 
-      - name: Build sample image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          push: false
-          platforms: linux/amd64,linux/arm64
+    - name: Setup Buildx
+      uses: ./
+
+    - name: Build sample image
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        platforms: linux/amd64,linux/arm64
 
   buildkit-config:
     name: BuildKit Configuration

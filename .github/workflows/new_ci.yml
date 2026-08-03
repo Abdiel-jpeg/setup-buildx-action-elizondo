@@ -34,7 +34,7 @@ jobs:
     steps:
 
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install Docker Buildx
         id: buildx
@@ -53,7 +53,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Configure Buildx
         id: builder
@@ -73,7 +73,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Configure Buildx
         uses: ./
@@ -89,7 +89,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Create sample Dockerfile
         run: |
@@ -121,7 +121,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Create BuildKit configuration
         run: |
@@ -148,7 +148,7 @@ jobs:
       DOCKER_HOST: unix:///tmp/nonexistent.sock
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup Buildx
         id: buildx
@@ -165,7 +165,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Configure Buildx
         uses: ./

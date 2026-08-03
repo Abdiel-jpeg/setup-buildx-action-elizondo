@@ -60,3 +60,4 @@ jspm_packages/
 .github/workflows/publish.yml
 .github/workflows/update-dist.yml
 .github/workflows/zizmor.yml
+.github/dependabot.yml
